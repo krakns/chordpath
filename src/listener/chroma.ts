@@ -33,17 +33,27 @@ export function chromaOf(frame: Frame, sampleRate: number): Chroma {
   }
   fft(re, im)
 
+  const bins = n / 2
+  const mag = new Float64Array(bins + 1)
+  for (let k = 0; k <= bins; k++) mag[k] = Math.hypot(re[k], im[k])
+
   const binHz = sampleRate / n
   const first = Math.max(1, Math.ceil(MIN_HZ / binHz))
-  const last = Math.min(Math.floor(MAX_HZ / binHz), n / 2)
+  const last = Math.min(Math.floor(MAX_HZ / binHz), bins - 1)
   for (let k = first; k <= last; k++) {
-    chroma[pitchClassOf(k * binHz)] += Math.hypot(re[k], im[k])
+    if (!(mag[k] > mag[k - 1] && mag[k] >= mag[k + 1])) continue
+    chroma[pitchClassOf((k + peakOffset(mag[k - 1], mag[k], mag[k + 1])) * binHz)] += mag[k]
   }
 
   let total = 0
   for (let i = 0; i < 12; i++) total += chroma[i]
   if (total > 0) for (let i = 0; i < 12; i++) chroma[i] /= total
   return chroma
+}
+
+function peakOffset(left: number, peak: number, right: number): number {
+  const curvature = left - 2 * peak + right
+  return curvature === 0 ? 0 : (0.5 * (left - right)) / curvature
 }
 
 function nextPowerOfTwo(n: number): number {

@@ -39,6 +39,19 @@ describe('chromaOf', () => {
     expect(c.reduce((a, b) => a + b, 0)).toBeCloseTo(1, 5)
   })
 
+  it('keeps a chord of pure sines inside its three pitch classes', () => {
+    for (const freqs of [
+      [261.63, 329.63, 392],
+      [130.81, 164.81, 196],
+    ]) {
+      const frame = new Float32Array(FRAME)
+      for (let i = 0; i < FRAME; i++) for (const hz of freqs) frame[i] += 0.2 * Math.sin((2 * Math.PI * hz * i) / 48000)
+      const c = chromaOf(frame, 48000)
+      expect(topBins(c, 3).sort((a, b) => a - b)).toEqual([0, 4, 7])
+      expect(c[0] + c[4] + c[7]).toBeGreaterThan(0.9)
+    }
+  })
+
   it('returns all zeros for a silent frame', () => {
     const c = chromaOf(new Float32Array(FRAME), 44100)
     expect([...c]).toEqual(new Array(12).fill(0))
