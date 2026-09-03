@@ -3,3 +3,4 @@ dist/
 .scratch/**/*.pdf
 .scratch/**/samples/
 *.local
+*.tsbuildinfo
