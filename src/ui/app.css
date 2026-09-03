@@ -3,6 +3,7 @@
   --color-fg: #1a1a2e;
   --color-accent: #3d5afe;
   --color-accent-fg: #ffffff;
+  --color-bar: #d6d6df;
   color-scheme: light dark;
 }
 
@@ -12,6 +13,7 @@
     --color-fg: #f5f5f7;
     --color-accent: #7c9bff;
     --color-accent-fg: #0b0b17;
+    --color-bar: #2c2c48;
   }
 }
 
@@ -179,4 +181,126 @@ body {
 .keyboard__key--root.keyboard__white--active,
 .keyboard__key--root.keyboard__black--active {
   fill: color-mix(in srgb, var(--color-accent) 70%, black 30%);
+}
+
+.listen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.listen__title {
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  margin: 0;
+}
+
+.listen__big {
+  font-size: 3rem;
+  font-weight: 600;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.listen__muted {
+  opacity: 0.7;
+  margin: 0;
+}
+
+.listen__button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: var(--color-accent-fg);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.listen__button:active {
+  filter: brightness(0.9);
+}
+
+.listen__button:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.listen__button--secondary {
+  background: transparent;
+  color: var(--color-accent);
+  border: 2px solid var(--color-accent);
+}
+
+.listen__controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.listen__back {
+  color: var(--color-accent);
+  padding: 0.75rem;
+  min-height: 44px;
+}
+
+.meter {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.meter__bars {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 0.25rem;
+  height: 40vh;
+  min-height: 12rem;
+}
+
+.meter__bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.meter__fill {
+  width: 100%;
+  background: var(--color-bar);
+  border-radius: 4px 4px 0 0;
+  transition: height 60ms linear;
+}
+
+.meter__fill--active {
+  background: var(--color-accent);
+}
+
+.meter__label {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.level {
+  width: 100%;
+  height: 0.75rem;
+  background: var(--color-bar);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.level__fill {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width 60ms linear;
 }
