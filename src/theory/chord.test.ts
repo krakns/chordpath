@@ -43,6 +43,22 @@ describe('parseChord', () => {
     expect(pcs(symbol)).toEqual(expected)
   })
 
+  it.each([
+    ['C', 'maj', null],
+    ['Cmaj7', 'maj', 'maj7'],
+    ['C7', 'maj', 'min7'],
+    ['Cm7', 'min', 'min7'],
+    ['Cm7b5', 'dim', 'min7'],
+    ['Cø7', 'dim', 'min7'],
+    ['Cdim7', 'dim', 'dim7'],
+    ['C6', 'maj', null],
+    ['C9', 'maj', 'min7'],
+  ])('%s has quality %s and seventh %s', (symbol, quality, seventh) => {
+    const result = parseChord(symbol)
+    expect(result.ok && result.chord.quality).toBe(quality)
+    expect(result.ok && result.chord.seventh).toBe(seventh)
+  })
+
   it('spells the root and quality on a valid parse', () => {
     const result = parseChord('Cmaj7')
     expect(result.ok).toBe(true)

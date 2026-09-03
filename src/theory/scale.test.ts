@@ -21,7 +21,6 @@ describe('scale', () => {
 })
 
 describe('degreeOf', () => {
-  // Expected spellings for every key's major scale, degrees 1-7.
   const MAJOR_DEGREES: Record<PitchClass, string[]> = {
     0: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
     1: ['Db', 'Eb', 'F', 'Gb', 'Ab', 'Bb', 'C'],
@@ -37,10 +36,7 @@ describe('degreeOf', () => {
     11: ['B', 'C#', 'D#', 'E', 'F#', 'G#', 'A#'],
   }
 
-  // Expected spellings for every key's natural minor scale, degrees 1-7. Db
-  // and Ab minor (keys 1 and 8) carry a double flat: their tonic is itself
-  // spelled with a flat, and strict letter sequencing from that tonic forces
-  // one degree two semitones below its natural letter.
+  // Db and Ab minor need a double flat: strict letter sequencing from a flat tonic forces it.
   const NATURAL_MINOR_DEGREES: Record<PitchClass, string[]> = {
     0: ['C', 'D', 'Eb', 'F', 'G', 'Ab', 'Bb'],
     1: ['Db', 'Eb', 'Fb', 'Gb', 'Ab', 'Bbb', 'Cb'],
@@ -56,23 +52,28 @@ describe('degreeOf', () => {
     11: ['B', 'C#', 'D', 'E', 'F#', 'G', 'A'],
   }
 
-  for (const [key, degrees] of Object.entries(MAJOR_DEGREES)) {
-    const pc = Number(key) as PitchClass
-    degrees.forEach((expected, index) => {
-      it(`degree ${index + 1} of key ${pc} major is ${expected}`, () => {
-        expect(degreeOf(pc, 'major', String(index + 1))).toBe(expected)
+  const TABLES = [
+    ['major', MAJOR_DEGREES],
+    ['natural-minor', NATURAL_MINOR_DEGREES],
+  ] as const
+  for (const [mode, table] of TABLES) {
+    for (const [key, degrees] of Object.entries(table)) {
+      const pc = Number(key) as PitchClass
+      degrees.forEach((expected, index) => {
+        it(`degree ${index + 1} of key ${pc} ${mode} is ${expected}`, () => {
+          expect(degreeOf(pc, mode, String(index + 1))).toBe(expected)
+        })
       })
-    })
+    }
   }
 
-  for (const [key, degrees] of Object.entries(NATURAL_MINOR_DEGREES)) {
-    const pc = Number(key) as PitchClass
-    degrees.forEach((expected, index) => {
-      it(`degree ${index + 1} of key ${pc} natural minor is ${expected}`, () => {
-        expect(degreeOf(pc, 'natural-minor', String(index + 1))).toBe(expected)
-      })
-    })
-  }
+  it('reads an accidental against the major scale in any mode', () => {
+    expect(degreeOf(9, 'natural-minor', 'b6')).toBe('F')
+    expect(degreeOf(9, 'natural-minor', '6')).toBe('F')
+    expect(degreeOf(0, 'dorian', 'b3')).toBe('Eb')
+    expect(degreeOf(0, 'dorian', '3')).toBe('Eb')
+    expect(degreeOf(0, 'dorian', 'b7')).toBe('Bb')
+  })
 
   it('spells b6 of G as Eb, not the enharmonic D#', () => {
     expect(degreeOf(7, 'major', 'b6')).toBe('Eb')

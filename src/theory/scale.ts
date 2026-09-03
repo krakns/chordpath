@@ -28,9 +28,10 @@ const DEGREE_RE = /^(bb|b|##|#)?([1-7])$/
 const ACCIDENTAL_SEMITONES: Record<string, number> = { '': 0, '#': 1, '##': 2, b: -1, bb: -2 }
 
 /**
- * A named scale degree ('4', 'b6', '#4', '7'), spelled correctly for the key:
- * the accidental prefix alters the mode's own degree, and the result keeps
- * that degree's letter (b6 of G is Eb, not the enharmonic D#).
+ * A named scale degree ('4', 'b6', '#4', '7'), spelled correctly for the key.
+ * A bare number is the mode's own degree. An accidental is relative to the
+ * major scale, the way players say it: b6 of A minor is F, b3 of C dorian is Eb.
+ * The result keeps the degree's letter (b6 of G is Eb, not D#).
  */
 export function degreeOf(key: PitchClass, mode: Mode, degree: string): NoteName {
   const match = DEGREE_RE.exec(degree)
@@ -38,7 +39,8 @@ export function degreeOf(key: PitchClass, mode: Mode, degree: string): NoteName 
   const [, accidental, digits] = match
   const degreeNumber = Number(digits)
 
-  const targetPc = mod12(key + MODE_INTERVALS[mode][degreeNumber - 1] + ACCIDENTAL_SEMITONES[accidental ?? ''])
+  const reference = accidental ? MODE_INTERVALS.major : MODE_INTERVALS[mode]
+  const targetPc = mod12(key + reference[degreeNumber - 1] + ACCIDENTAL_SEMITONES[accidental ?? ''])
 
   const rootLetter = defaultSpelling(key)[0] as Letter
   const rootLetterIndex = LETTERS.indexOf(rootLetter)
