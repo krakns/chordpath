@@ -4,7 +4,7 @@
 
 **Blocked by:** 01 Scaffold, install, deploy
 
-**Status:** ready-for-agent
+**Status:** in-review (PR https://github.com/krakns/chordpath/pull/2)
 
 - [ ] Mic starts from a tap on iOS Safari, both in the browser and installed from the home screen
 - [ ] Calibration stores noise floor and gain and can be re-run

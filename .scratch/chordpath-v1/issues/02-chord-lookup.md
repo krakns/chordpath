@@ -4,7 +4,7 @@
 
 **Blocked by:** 01 Scaffold, install, deploy
 
-**Status:** ready-for-agent
+**Status:** in-review (PR https://github.com/krakns/chordpath/pull/3)
 
 - [ ] Every chord symbol type listed above parses to the correct pitch-class set, with tests
 - [ ] Unknown or malformed symbols return a clear parse error shown in the UI
