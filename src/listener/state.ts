@@ -1,5 +1,6 @@
 import type { Chroma } from './chroma'
 import { advanceCalibration, beginCalibration, type Calibration, type CalibrationStep } from './calibration'
+import { unreachable } from './unreachable'
 
 export type ListenView =
   | { kind: 'calibrating'; step: CalibrationStep }
@@ -54,15 +55,11 @@ export function reduceListener(state: ListenerState, action: ListenerAction): Li
     case 'stop':
       return IDLE
     default:
-      return assertNever(action)
+      return unreachable(action, 'listener action')
   }
 }
 
 export function calibrationOf(view: ListenView): Calibration | null {
   if (view.kind === 'meter') return view.calibration
   return view.step.kind === 'heard' ? view.step.calibration : null
-}
-
-function assertNever(value: never): never {
-  throw new Error(`unexpected listener action ${JSON.stringify(value)}`)
 }

@@ -1,13 +1,12 @@
 import { useEffect, useReducer, useRef, type ReactNode } from 'react'
-import { PITCH_CLASSES, type Chroma } from '../../listener/chroma'
+import { PITCH_CLASSES, PRESENCE_THRESHOLD, type Chroma } from '../../listener/chroma'
 import {
   CHORD_MS,
   CHORD_FRAMES,
   QUIET_MS,
-  TARGET_LEVEL,
   loadCalibration,
   saveCalibration,
-  type Calibration,
+  scaledLevel,
   type CalibrationStep,
 } from '../../listener/calibration'
 import { isPermissionDenied, messageOf, startListening, type Handle } from '../../listener/listener'
@@ -37,10 +36,7 @@ export function Listen() {
 
   useEffect(() => () => handle.current?.stop(), [])
 
-  const heard =
-    state.kind === 'listening' && state.view.kind === 'calibrating' && state.view.step.kind === 'heard'
-      ? state.view.step.calibration
-      : null
+  const heard = state.kind === 'listening' && state.view.kind === 'calibrating' ? calibrationOf(state.view) : null
   useEffect(() => {
     if (heard) saveCalibration(heard)
   }, [heard])
@@ -141,7 +137,7 @@ function Live({
   if (view.kind === 'meter') {
     return (
       <Screen title="Listening">
-        <Meter chroma={chroma} level={level} calibration={calibration} />
+        <Meter chroma={chroma} level={level} gain={calibration?.gain} />
         {controls}
       </Screen>
     )
@@ -174,7 +170,7 @@ function CalibrationView({
         <Screen title="Stay quiet">
           <p className="listen__big">{secondsLeft(step.startedAt, QUIET_MS)}</p>
           <p>Measuring the room noise.</p>
-          <LevelBar level={level} calibration={null} />
+          <LevelBar level={level} />
           {children}
         </Screen>
       )
@@ -185,7 +181,7 @@ function CalibrationView({
           <p>
             Heard {step.hitLevels.length} of {CHORD_FRAMES} frames.
           </p>
-          <Meter chroma={chroma} level={level} calibration={null} />
+          <Meter chroma={chroma} level={level} />
           {children}
         </Screen>
       )
@@ -203,14 +199,14 @@ function CalibrationView({
       return (
         <Screen title="Heard it">
           <p className="listen__muted">Calibration saved. Gain {step.calibration.gain.toFixed(2)}.</p>
-          <Meter chroma={chroma} level={level} calibration={step.calibration} />
+          <Meter chroma={chroma} level={level} gain={step.calibration.gain} />
           {children}
         </Screen>
       )
   }
 }
 
-function Meter({ chroma, level, calibration }: { chroma: Chroma; level: number; calibration: Calibration | null }) {
+function Meter({ chroma, level, gain }: { chroma: Chroma; level: number; gain?: number }) {
   const peak = Math.max(...chroma)
   return (
     <div className="meter">
@@ -218,20 +214,20 @@ function Meter({ chroma, level, calibration }: { chroma: Chroma; level: number; 
         {PITCH_CLASSES.map((name, i) => (
           <div key={name} className="meter__bar">
             <div
-              className={`meter__fill${chroma[i] > 1 / 12 ? ' meter__fill--active' : ''}`}
+              className={`meter__fill${chroma[i] > PRESENCE_THRESHOLD ? ' meter__fill--active' : ''}`}
               style={{ height: `${peak > 0 ? (chroma[i] / peak) * 100 : 0}%` }}
             />
             <span className="meter__label">{name}</span>
           </div>
         ))}
       </div>
-      <LevelBar level={level} calibration={calibration} />
+      <LevelBar level={level} gain={gain} />
     </div>
   )
 }
 
-function LevelBar({ level, calibration }: { level: number; calibration: Calibration | null }) {
-  const scaled = Math.min(1, (level * (calibration?.gain ?? 1)) / (TARGET_LEVEL * 2))
+function LevelBar({ level, gain = 1 }: { level: number; gain?: number }) {
+  const scaled = scaledLevel(level, gain)
   return (
     <div className="level" role="meter" aria-label="Level" aria-valuemin={0} aria-valuemax={1} aria-valuenow={scaled}>
       <div className="level__fill" style={{ width: `${scaled * 100}%` }} />
