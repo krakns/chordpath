@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** in-review (branch feat/scaffold; iOS home-screen install still to verify on the iPad)
+**Status:** done (merged, https://github.com/krakns/chordpath/pull/1; iOS home-screen install still to verify on the iPad)
 
 - [x] `npm test` runs Vitest and passes with at least one smoke test
 - [x] `npm run build` produces a static site with the correct base path for GitHub Pages

@@ -4,11 +4,11 @@
 
 **Blocked by:** 01 Scaffold, install, deploy
 
-**Status:** in-review (PR https://github.com/krakns/chordpath/pull/3)
+**Status:** done (merged, https://github.com/krakns/chordpath/pull/3)
 
-- [ ] Every chord symbol type listed above parses to the correct pitch-class set, with tests
-- [ ] Unknown or malformed symbols return a clear parse error shown in the UI
-- [ ] Scale degree lookup answers "what is the b6 of G" style queries for all degrees and keys, with tests
-- [ ] Transposing a chord by any interval produces the correct new symbol and pitch classes
-- [ ] Keyboard diagram highlights the right keys for the chosen voicing
-- [ ] Theory functions are pure and have no DOM or audio dependencies
+- [x] Every chord symbol type listed above parses to the correct pitch-class set, with tests
+- [x] Unknown or malformed symbols return a clear parse error shown in the UI
+- [x] Scale degree lookup answers "what is the b6 of G" style queries for all degrees and keys, with tests
+- [x] Transposing a chord by any interval produces the correct new symbol and pitch classes
+- [x] Keyboard diagram highlights the right keys for the chosen voicing
+- [x] Theory functions are pure and have no DOM or audio dependencies

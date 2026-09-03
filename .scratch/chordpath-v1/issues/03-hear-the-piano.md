@@ -4,12 +4,12 @@
 
 **Blocked by:** 01 Scaffold, install, deploy
 
-**Status:** in-review (PR https://github.com/krakns/chordpath/pull/2)
+**Status:** done (merged, https://github.com/krakns/chordpath/pull/2; real mic, iOS Safari, and wake lock still unverified on the iPad)
 
 - [ ] Mic starts from a tap on iOS Safari, both in the browser and installed from the home screen
-- [ ] Calibration stores noise floor and gain and can be re-run
-- [ ] Calibration reports failure clearly if it cannot hear the test chord
+- [x] Calibration stores noise floor and gain and can be re-run
+- [x] Calibration reports failure clearly if it cannot hear the test chord
 - [ ] Live meter shows the right dominant bins when a single chord is played on the piano
 - [ ] Wake lock is held while the meter screen is open and released when leaving it
-- [ ] Offline test runs a WAV fixture through the pipeline and asserts the dominant pitch classes per clip
-- [ ] Fixture recording instructions are documented so more clips can be added later
+- [x] Offline test runs a WAV fixture through the pipeline and asserts the dominant pitch classes per clip
+- [x] Fixture recording instructions are documented so more clips can be added later
