@@ -1,6 +1,6 @@
 export type { PitchClass, Midi, NoteName } from './pitch'
 export { mod12, defaultSpelling, spellPitchClass, midiForPc, KEY_PREFERENCE } from './pitch'
-export type { ChordQuality, Chord, ParseResult } from './chord'
+export type { ChordQuality, Seventh, Chord, ParseResult } from './chord'
 export { parseChord, pitchClasses } from './chord'
 export type { Mode } from './scale'
 export { scale, degreeOf, MODE_INTERVALS } from './scale'

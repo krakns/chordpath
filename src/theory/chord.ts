@@ -1,12 +1,14 @@
-import { type NoteName, type PitchClass, mod12 } from './pitch'
+import { NATURAL_PC, type Letter, type NoteName, type PitchClass, mod12 } from './pitch'
 import { QUALITY_BASE_INTERVALS, TOKEN_REGISTRY, longestMatchingToken } from './chordTokens'
 
 export type ChordQuality = 'maj' | 'min' | 'dim' | 'aug' | 'sus2' | 'sus4'
+export type Seventh = 'maj7' | 'min7' | 'dim7'
 
 export type Chord = {
   root: PitchClass
   rootName: NoteName
   quality: ChordQuality
+  seventh: Seventh | null
   /** Semitone offsets from the root, sorted, always including 0. */
   intervals: number[]
   bass: PitchClass | null
@@ -22,9 +24,8 @@ function parseNote(text: string): { pc: PitchClass; name: NoteName; length: numb
   const match = ROOT_RE.exec(text)
   if (!match) return undefined
   const [full, letter, accidental] = match
-  const naturalPc: Record<string, PitchClass> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }
   const offset = accidental === '#' ? 1 : accidental === 'b' ? -1 : 0
-  return { pc: mod12(naturalPc[letter] + offset), name: full, length: full.length }
+  return { pc: mod12(NATURAL_PC[letter as Letter] + offset), name: full, length: full.length }
 }
 
 export function parseChord(symbol: string): ParseResult {
@@ -51,6 +52,7 @@ export function parseChord(symbol: string): ParseResult {
   }
 
   let quality: ChordQuality = 'maj'
+  let seventh: Seventh | null = null
   const additions: number[] = []
   let remaining = mainPart.slice(root.length)
   while (remaining.length > 0) {
@@ -60,6 +62,7 @@ export function parseChord(symbol: string): ParseResult {
     }
     const edit = TOKEN_REGISTRY[token]
     if (edit.quality) quality = edit.quality
+    if (edit.seventh) seventh = edit.seventh
     if (edit.add) additions.push(...edit.add)
     remaining = remaining.slice(token.length)
   }
@@ -72,6 +75,7 @@ export function parseChord(symbol: string): ParseResult {
     root: root.pc,
     rootName: root.name,
     quality,
+    seventh,
     intervals,
     bass: bass?.pc ?? null,
     bassName: bass?.name ?? null,
