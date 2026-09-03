@@ -4,11 +4,11 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** in-review (branch feat/scaffold; iOS home-screen install still to verify on the iPad)
 
-- [ ] `npm test` runs Vitest and passes with at least one smoke test
-- [ ] `npm run build` produces a static site with the correct base path for GitHub Pages
-- [ ] Workflow builds, tests, and deploys to Pages on push to main
+- [x] `npm test` runs Vitest and passes with at least one smoke test
+- [x] `npm run build` produces a static site with the correct base path for GitHub Pages
+- [x] Workflow builds, tests, and deploys to Pages on push to main
 - [ ] Manifest and icons let Safari "Add to Home Screen" open the app standalone
-- [ ] Home screen renders a Start button on both iPhone portrait and iPad landscape
-- [ ] README states that song charts and progress never enter the repo
+- [x] Home screen renders a Start button on both iPhone portrait and iPad landscape
+- [x] README states that song charts and progress never enter the repo
