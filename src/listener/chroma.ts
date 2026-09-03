@@ -8,6 +8,20 @@ export const PITCH_CLASSES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', '
 const MIN_HZ = 60
 const MAX_HZ = 2000
 
+export const PRESENCE_THRESHOLD = 1 / 12
+
+const windows = new Map<number, Float64Array>()
+
+function hannWindow(len: number): Float64Array {
+  let w = windows.get(len)
+  if (!w) {
+    w = new Float64Array(len)
+    for (let i = 0; i < len; i++) w[i] = 0.5 - 0.5 * Math.cos((2 * Math.PI * i) / len)
+    windows.set(len, w)
+  }
+  return w
+}
+
 export function pitchClassOf(hz: number): number {
   const midi = Math.round(69 + 12 * Math.log2(hz / 440))
   return ((midi % 12) + 12) % 12
@@ -28,18 +42,16 @@ export function chromaOf(frame: Frame, sampleRate: number): Chroma {
   const n = nextPowerOfTwo(len)
   const re = new Float64Array(n)
   const im = new Float64Array(n)
-  for (let i = 0; i < len; i++) {
-    re[i] = frame[i] * (0.5 - 0.5 * Math.cos((2 * Math.PI * i) / len))
-  }
+  const window = hannWindow(len)
+  for (let i = 0; i < len; i++) re[i] = frame[i] * window[i]
   fft(re, im)
 
   const bins = n / 2
-  const mag = new Float64Array(bins + 1)
-  for (let k = 0; k <= bins; k++) mag[k] = Math.hypot(re[k], im[k])
-
   const binHz = sampleRate / n
   const first = Math.max(1, Math.ceil(MIN_HZ / binHz))
   const last = Math.min(Math.floor(MAX_HZ / binHz), bins - 1)
+  const mag = new Float64Array(bins + 1)
+  for (let k = first - 1; k <= last + 1; k++) mag[k] = Math.sqrt(re[k] * re[k] + im[k] * im[k])
   for (let k = first; k <= last; k++) {
     if (!(mag[k] > mag[k - 1] && mag[k] >= mag[k + 1])) continue
     chroma[pitchClassOf((k + peakOffset(mag[k - 1], mag[k], mag[k + 1])) * binHz)] += mag[k]

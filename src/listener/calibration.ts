@@ -1,11 +1,12 @@
 import type { Chroma } from './chroma'
+import { unreachable } from './unreachable'
 
 export type Calibration = { noiseFloor: number; gain: number; measuredAt: string }
 
 export const TARGET_LEVEL = 0.1
 export const QUIET_MS = 3000
 export const CHORD_MS = 5000
-export const CHORD_SHARE = 0.6
+const CHORD_SHARE = 0.6
 export const CHORD_FRAMES = 5
 export const C_MAJOR: readonly number[] = [0, 4, 7]
 
@@ -35,7 +36,7 @@ export function advanceCalibration(
       return { kind: 'chord', startedAt: now, noiseFloor: median(levels), hitLevels: [] }
     }
     case 'chord': {
-      const hit = level > step.noiseFloor * 2 && chordShare(chroma, C_MAJOR) >= CHORD_SHARE
+      const hit = !isSilent(level, step.noiseFloor) && chordShare(chroma, C_MAJOR) >= CHORD_SHARE
       const hitLevels = hit ? [...step.hitLevels, level] : []
       if (hitLevels.length >= CHORD_FRAMES) {
         return {
@@ -60,7 +61,7 @@ export function advanceCalibration(
     case 'failed':
       return step
     default:
-      return assertNever(step)
+      return unreachable(step, 'calibration step')
   }
 }
 
@@ -71,8 +72,15 @@ export function chordShare(chroma: Chroma, pitchClasses: readonly number[]): num
 }
 
 export function gainFor(chordLevel: number): number {
-  if (chordLevel <= 0) return MAX_GAIN
   return Math.min(MAX_GAIN, Math.max(MIN_GAIN, TARGET_LEVEL / chordLevel))
+}
+
+export function isSilent(level: number, noiseFloor: number): boolean {
+  return level <= noiseFloor * 2
+}
+
+export function scaledLevel(level: number, gain: number): number {
+  return Math.min(1, (level * gain) / (TARGET_LEVEL * 2))
 }
 
 export function median(values: number[]): number {
@@ -107,8 +115,4 @@ export function parseCalibration(value: unknown): Calibration | null {
   if (typeof noiseFloor !== 'number' || typeof gain !== 'number' || typeof measuredAt !== 'string') return null
   if (!Number.isFinite(noiseFloor) || !Number.isFinite(gain) || gain <= 0) return null
   return { noiseFloor, gain, measuredAt }
-}
-
-function assertNever(value: never): never {
-  throw new Error(`unexpected calibration step ${JSON.stringify(value)}`)
 }
