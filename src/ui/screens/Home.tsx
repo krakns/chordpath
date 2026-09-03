@@ -5,6 +5,10 @@ export function Home() {
       <button type="button" className="home__start">
         Start
       </button>
+      <nav className="home__nav">
+        <a href="#reference">Chords</a>
+        <a href="#listen">Listen</a>
+      </nav>
     </main>
   )
 }

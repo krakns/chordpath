@@ -75,3 +75,20 @@ body {
   outline: 3px solid var(--color-accent);
   outline-offset: 3px;
 }
+
+.home__nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.home__nav a {
+  color: var(--color-accent);
+  font-size: 1.1rem;
+  padding: 0.5rem;
+}
+
+.screen {
+  min-height: 100dvh;
+  padding: calc(env(safe-area-inset-top) + 1rem) calc(env(safe-area-inset-right) + 1rem)
+    calc(env(safe-area-inset-bottom) + 1rem) calc(env(safe-area-inset-left) + 1rem);
+}
